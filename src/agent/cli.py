@@ -280,6 +280,55 @@ def eval_command(tag: str = "baseline", repeats: int = 1) -> int:
     return run_eval_suite(tag=tag, repeats=repeats)
 
 
+def debug_command(ticket_id: str | None = None, subject: str = "", body: str = "", plan: str = "Basis") -> int:
+    """Run interactive step-by-step debug trace on a single ticket."""
+    from agent.debug import debug_ticket
+
+    ticket: dict | None = None
+
+    if ticket_id:
+        if ticket_id.upper().startswith("E"):
+            # Load from examples
+            with open("evals/data/examples.json", "r", encoding="utf-8") as f:
+                data = json.load(f)
+                examples = data.get("examples", data)
+                for ex in examples:
+                    if ex["id"].upper() == ticket_id.upper():
+                        ticket = ex
+                        break
+        else:
+            # Try fetching from helpdesk or raw cache
+            try:
+                helpdesk = HelpdeskClient()
+                ticket = helpdesk.get_ticket(ticket_id)
+            except Exception:
+                raw_path = "state/raw/tickets_all.json"
+                if os.path.exists(raw_path):
+                    with open(raw_path, "r", encoding="utf-8") as f:
+                        for t in json.load(f):
+                            if t["id"].upper() == ticket_id.upper():
+                                ticket = t
+                                break
+
+        if not ticket:
+            print(f"Ticket {ticket_id} not found in examples or practice set.")
+            return 1
+    elif body:
+        ticket = {
+            "id": "CUSTOM_TEST",
+            "channel": "email",
+            "customer_plan": plan,
+            "subject": subject or "Test Subject",
+            "body": body,
+        }
+    else:
+        print("Please provide a ticket ID (e.g. 'python -m agent debug T005' or 'python -m agent debug E03') or specify --body.")
+        return 1
+
+    debug_ticket(ticket)
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="agent", description="Roosterly Support Ticket Agent")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -299,6 +348,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     eval_parser.add_argument("--tag", default="baseline", help="Tag name for eval results")
     eval_parser.add_argument("--repeats", type=int, default=1, help="Number of repetitions to check stability")
 
+    # debug
+    debug_parser = subparsers.add_parser("debug", help="Step-by-step trace of a single ticket or custom text")
+    debug_parser.add_argument("ticket_id", nargs="?", default=None, help="Ticket ID to trace (e.g. T001, E03)")
+    debug_parser.add_argument("--subject", default="", help="Custom ticket subject")
+    debug_parser.add_argument("--body", default="", help="Custom ticket body to analyze")
+    debug_parser.add_argument("--plan", default="Basis", help="Customer plan (Basis or Plus)")
+
     args = parser.parse_args(argv)
 
     if args.command == "run":
@@ -309,6 +365,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return reset_and_run_command()
     elif args.command == "eval":
         return eval_command(tag=args.tag, repeats=args.repeats)
+    elif args.command == "debug":
+        return debug_command(ticket_id=args.ticket_id, subject=args.subject, body=args.body, plan=args.plan)
 
     return 0
 
