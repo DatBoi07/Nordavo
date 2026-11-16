@@ -42,8 +42,8 @@ def _compute_content_hash(ticket: dict) -> str:
     return hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
 
 
-def run_command(dry_run: bool = False) -> int:
-    """Execute the ticket agent across all open tickets."""
+def run_command(dry_run: bool = False, limit: int | None = None) -> int:
+    """Execute the ticket agent across open tickets."""
     print("=" * 60)
     print(f"ROOSTERLY SUPPORT TICKET AGENT ({'DRY RUN' if dry_run else 'LIVE RUN'})")
     print("=" * 60)
@@ -67,6 +67,10 @@ def run_command(dry_run: bool = False) -> int:
     if not open_tickets:
         print("No open tickets to process.")
         return 0
+
+    if limit is not None and limit > 0:
+        open_tickets = open_tickets[:limit]
+        print(f"Limiting execution to first {len(open_tickets)} ticket(s) for debugging.")
 
     decisions: list[TicketDecision] = []
     failures: list[str] = []
@@ -331,11 +335,12 @@ def debug_command(ticket_id: str | None = None, subject: str = "", body: str = "
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="agent", description="Roosterly Support Ticket Agent")
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers = parser.add_subparsers(dest="command")
 
     # run
     run_parser = subparsers.add_parser("run", help="Run the agent over open tickets")
     run_parser.add_argument("--dry-run", action="store_true", help="Inspect and draft without POSTing to API")
+    run_parser.add_argument("--limit", type=int, default=None, help="Process at most N tickets (e.g. --limit 1 for debug)")
 
     # status
     subparsers.add_parser("status", help="Show API and local database status")
@@ -355,10 +360,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     debug_parser.add_argument("--body", default="", help="Custom ticket body to analyze")
     debug_parser.add_argument("--plan", default="Basis", help="Customer plan (Basis or Plus)")
 
+    # If run directly without arguments (e.g. hitting F5 on __main__.py), default to safe dry-run debug
+    if argv is None and len(sys.argv) == 1:
+        print("[INFO] No CLI command specified. Defaulting to: 'run --dry-run --limit 1'")
+        print("       (Available commands: run, debug, status, eval, reset-and-run)\n")
+        argv = ["run", "--dry-run", "--limit", "1"]
+
     args = parser.parse_args(argv)
 
     if args.command == "run":
-        return run_command(dry_run=args.dry_run)
+        return run_command(dry_run=args.dry_run, limit=args.limit)
     elif args.command == "status":
         return status_command()
     elif args.command == "reset-and-run":
