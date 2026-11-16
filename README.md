@@ -8,8 +8,8 @@ A safe, explainable, production-ready support agent for Roosterly (Dutch shift-p
 
 ```bash
 # 1. Clone repository and set up virtual environment
-git clone https://github.com/DatBoi07/Norvado.git
-cd Norvado
+git clone https://github.com/DatBoi07/Nordavo.git
+cd Nordavo
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
