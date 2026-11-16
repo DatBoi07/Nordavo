@@ -8,8 +8,8 @@ A safe, explainable, production-ready support agent for Roosterly (Dutch shift-p
 
 ```bash
 # 1. Clone repository and set up virtual environment
-git clone <repo-url>
-cd support-agent
+git clone https://github.com/DatBoi07/Norvado.git
+cd Norvado
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
@@ -20,7 +20,7 @@ pip install -e .
 cp .env.example .env
 # Edit .env with your HELPDESK_API_KEY, HELPDESK_EMAIL, and GEMINI_API_KEY
 
-# 4. Run tests
+# 4. Run unit tests (34 offline unit tests, ~0.8s)
 pytest -v
 
 # 5. Run evaluation suite (official 10 examples + 10 synthetic test cases)
@@ -32,7 +32,10 @@ python -m agent run --dry-run
 # 7. Check status of API and local SQLite state
 python -m agent status
 
-# 8. Final scored run (resets practice tickets and executes live handling)
+# 8. Interactive debug trace on any single ticket
+python -m agent debug T001
+
+# 9. Final scored run (resets practice tickets and executes live handling)
 python -m agent reset-and-run
 ```
 
