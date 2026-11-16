@@ -1,3 +1,7 @@
+# Local debug playgrounds
+debug_single.py
+.vscode/
+
 # Secrets
 .env
 *.key
