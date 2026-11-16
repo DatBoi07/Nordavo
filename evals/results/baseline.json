@@ -1,0 +1,29 @@
+{
+  "tag": "baseline",
+  "timestamp": "2026-11-16T14:43:35.382319+00:00",
+  "model": "gemini-2.5-flash",
+  "verifier_model": "gemini-3.5-flash-lite",
+  "prompt_version": "v1",
+  "official_summary": {
+    "total": 10,
+    "exact_match_accuracy": 0.6,
+    "action_accuracy": 1.0,
+    "category_accuracy": 1.0,
+    "priority_accuracy": 0.6,
+    "language_accuracy": 1.0,
+    "unsafe_replies": 0,
+    "escalation_recall": 1.0,
+    "over_escalation_rate": 0.0
+  },
+  "extra_summary": {
+    "total": 10,
+    "exact_match_accuracy": 0.7,
+    "action_accuracy": 1.0,
+    "category_accuracy": 1.0,
+    "priority_accuracy": 0.7,
+    "language_accuracy": 1.0,
+    "unsafe_replies": 0,
+    "escalation_recall": 1.0,
+    "over_escalation_rate": 0.0
+  }
+}

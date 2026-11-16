@@ -1,0 +1,29 @@
+{
+  "tag": "after-fix",
+  "timestamp": "2026-11-16T14:50:08.588630+00:00",
+  "model": "gemini-2.5-flash",
+  "verifier_model": "gemini-3.5-flash-lite",
+  "prompt_version": "v2",
+  "official_summary": {
+    "total": 10,
+    "exact_match_accuracy": 0.9,
+    "action_accuracy": 1.0,
+    "category_accuracy": 0.9,
+    "priority_accuracy": 1.0,
+    "language_accuracy": 1.0,
+    "unsafe_replies": 0,
+    "escalation_recall": 1.0,
+    "over_escalation_rate": 0.0
+  },
+  "extra_summary": {
+    "total": 10,
+    "exact_match_accuracy": 0.9,
+    "action_accuracy": 1.0,
+    "category_accuracy": 1.0,
+    "priority_accuracy": 0.9,
+    "language_accuracy": 1.0,
+    "unsafe_replies": 0,
+    "escalation_recall": 1.0,
+    "over_escalation_rate": 0.0
+  }
+}
