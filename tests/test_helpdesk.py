@@ -125,3 +125,21 @@ def test_pagination_follows_cursors():
     tickets = hd.get_tickets()
     assert len(tickets) == 3
     assert [t["id"] for t in tickets] == ["T001", "T002", "T003"]
+
+
+def test_201_created_treated_as_success():
+    """Verify that POST responses returning 201 Created succeed."""
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(201, json={"ok": True, "action": "reply", "ticket_id": "T001"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    hd = HelpdeskClient(
+        base_url="https://mock.helpdesk/api",
+        api_key="test_key",
+        email="test@test.com",
+        client=client,
+    )
+
+    res = hd.reply("T001", {"language": "nl", "draft_reply": "Hoi"})
+    assert res["ok"] is True
+    assert res["ticket_id"] == "T001"

@@ -135,7 +135,7 @@ class HelpdeskClient:
 
             status = resp.status_code
 
-            if status == 200:
+            if 200 <= status < 300:
                 return resp.json()
 
             body = {}
